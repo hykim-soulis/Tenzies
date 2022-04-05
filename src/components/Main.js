@@ -24,23 +24,23 @@ export default function Main() {
     );
   });
 
+  function hold(id) {
+    setDice((prev) => {
+      const newDice = [...prev];
+      newDice[id] = { ...prev[id], isHeld: true };
+      if (newDice.map((el) => el.isHeld).every((el) => el === true)) {
+        setStatus('Reset Game');
+      }
+      return newDice;
+    });
+  }
+
   function handleDieClick(id) {
     if (answer === '') {
       setAnswer(dice[id].value);
-      setDice((prev) => {
-        const newDice = [...prev];
-        newDice[id] = { ...prev[id], isHeld: true };
-        return newDice;
-      });
+      hold(id);
     } else if (answer === dice[id].value) {
-      setDice((prev) => {
-        const newDice = [...prev];
-        newDice[id] = { ...prev[id], isHeld: true };
-        if (newDice.map((el) => el.isHeld).every((el) => el === true)) {
-          setStatus('Reset Game');
-        }
-        return newDice;
-      });
+      hold(id);
     }
   }
 
