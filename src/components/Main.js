@@ -1,15 +1,19 @@
 import React from 'react';
 import Die from './Die';
+import Confetti from 'react-confetti';
+
 export default function Main() {
   const [dice, setDice] = React.useState(allNewDice());
-  const [status, setStatus] = React.useState('Roll');
   const [answer, setAnswer] = React.useState('');
+  const [status, setStatus] = React.useState('Roll');
+
+  function generateNewDie() {
+    return { value: Math.floor(Math.random() * 6) + 1, isHeld: false };
+  }
   function allNewDice() {
     return Array(10)
       .fill()
-      .map(() => {
-        return { value: Math.floor(Math.random() * 6) + 1, isHeld: false };
-      });
+      .map(() => generateNewDie());
   }
 
   const diceElements = dice.map((el, index) => {
@@ -28,7 +32,7 @@ export default function Main() {
     setDice((prev) => {
       const newDice = [...prev];
       newDice[id] = { ...prev[id], isHeld: true };
-      if (newDice.map((el) => el.isHeld).every((el) => el === true)) {
+      if (newDice.every((el) => el.isHeld)) {
         setStatus('Reset Game');
       }
       return newDice;
@@ -47,13 +51,7 @@ export default function Main() {
   function rollDice() {
     if (status === 'Roll') {
       setDice((prev) => {
-        const newDice = allNewDice();
-        for (let i = 0; i < prev.length; i++) {
-          if (prev[i].isHeld) {
-            newDice[i] = { ...prev[i] };
-          }
-        }
-        return newDice;
+        return prev.map((el) => (el.isHeld ? el : generateNewDie()));
       });
     } else if (status === 'Reset Game') {
       setAnswer('');
@@ -62,7 +60,8 @@ export default function Main() {
     }
   }
   return (
-    <div className="Main">
+    <main className="Main">
+      {status === 'Reset Game' && <Confetti />}
       <h1 className="title">Tenzies</h1>
       <p className="para">
         Roll Until all dice are the same. Click each die to freeze it at its
@@ -72,6 +71,6 @@ export default function Main() {
       <button className="roll" onClick={rollDice}>
         {status}
       </button>
-    </div>
+    </main>
   );
 }
